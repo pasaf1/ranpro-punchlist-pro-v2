@@ -1,12 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { fabric } from 'fabric'; // ייבוא ישיר של ספריית fabric
-import { useConstructionStore } from '../../stores/constructionStore.js';
+import fabric from 'fabric';
+import { useConstructionStore } from '../../stores/constructionStore.js'; // <--- התיקון נמצא כאן
 import toast from 'react-hot-toast';
 
 const ConstructionCanvas = () => {
-  // נשתמש ב-useRef כדי לקבל גישה ישירה לאלמנט ה-canvas ב-HTML
   const canvasRef = useRef(null);
-  // נשמור את אובייקט הקנבס של fabric ב-state
   const [fabricCanvas, setFabricCanvas] = useState(null);
 
   const { addPin, pins, backgroundImage } = useConstructionStore(state => ({
@@ -15,22 +13,21 @@ const ConstructionCanvas = () => {
     backgroundImage: state.backgroundImage,
   }));
 
-  // useEffect זה ירוץ פעם אחת כשהרכיב עולה, ויאתחל את הקנבס של fabric
   useEffect(() => {
-    const canvas = new fabric.Canvas(canvasRef.current, {
-      width: canvasRef.current.parentElement.offsetWidth,
-      height: canvasRef.current.parentElement.offsetHeight,
-      backgroundColor: '#f0f0f0',
-    });
-    setFabricCanvas(canvas);
+    if (canvasRef.current) {
+        const canvas = new fabric.Canvas(canvasRef.current, {
+        width: canvasRef.current.parentElement.offsetWidth,
+        height: canvasRef.current.parentElement.offsetHeight,
+        backgroundColor: '#f0f0f0',
+        });
+        setFabricCanvas(canvas);
 
-    // פונקציית ניקוי חשובה - מונעת דליפות זיכרון
-    return () => {
-      canvas.dispose();
-    };
+        return () => {
+        canvas.dispose();
+        };
+    }
   }, []);
 
-  // הטמעת תמונת רקע
   useEffect(() => {
     if (backgroundImage && fabricCanvas) {
       fabric.Image.fromURL(backgroundImage, (img) => {
@@ -42,7 +39,6 @@ const ConstructionCanvas = () => {
     }
   }, [backgroundImage, fabricCanvas]);
 
-  // הוספת פין בלחיצה
   useEffect(() => {
     if (fabricCanvas) {
       const handleMouseDown = (options) => {
@@ -60,10 +56,8 @@ const ConstructionCanvas = () => {
     }
   }, [fabricCanvas, addPin, pins]);
 
-  // סנכרון וציור הפינים על הקנבס
   useEffect(() => {
     if (fabricCanvas) {
-        // מנקים רק את האובייקטים, לא את הרקע
         fabricCanvas.getObjects().forEach(obj => fabricCanvas.remove(obj));
 
         Object.values(pins).forEach(pin => {
@@ -79,7 +73,6 @@ const ConstructionCanvas = () => {
     }
   }, [pins, fabricCanvas]);
 
-  // מחזירים אלמנט <canvas> רגיל, ו-fabric ישתלט עליו
   return (
     <canvas ref={canvasRef} />
   );
