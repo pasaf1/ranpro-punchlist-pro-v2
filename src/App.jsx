@@ -42,4 +42,27 @@ function App() {
           <aside className="lg:col-span-1 bg-white p-4 rounded-lg shadow-lg h-[60vh] flex flex-col">
             <h2 className="text-xl font-semibold mb-3 border-b pb-2">רשימת ליקויים ({Object.keys(pins).length})</h2>
             <div className="flex-grow overflow-y-auto space-y-2 pr-2">
-              {Object.values(
+              {/* ====================================================== */}
+              {/* החלק הבא היה חסר אצלך */}
+              {/* ====================================================== */}
+              {Object.values(pins).length > 0 ? (
+                Object.values(pins).map(pin => (
+                  <div key={pin.id} className="p-2 border rounded-md flex justify-between items-center">
+                    <p className="font-semibold">ליקוי #{pin.id}</p>
+                    <button onClick={() => {deletePin(pin.id); toast.error(`ליקוי #${pin.id} נמחק.`);}} className="text-red-500 hover:text-red-700">
+                      מחק
+                    </button>
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-500 text-center pt-10">לחץ על התוכנית כדי להוסיף ליקוי.</p>
+              )}
+            </div>
+          </aside>
+        </main>
+      </div>
+    </>
+  );
+} 
+
+export default App;
